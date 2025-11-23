@@ -1,0 +1,19 @@
+# ROS2 workspace build files
+build/
+install/
+log/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE files
+.vscode/
+.idea/
+
+# MacOS / Windows garbage
+.DS_Store
+Thumbs.db
+
+# Colcon metadata
+.colcon/

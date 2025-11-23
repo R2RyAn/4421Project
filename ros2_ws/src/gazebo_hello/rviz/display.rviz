@@ -1,0 +1,44 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+      Cell Size: 1
+      Color: 160; 160; 160
+      Plane: XY
+
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: true
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+
+    - Class: rviz_default_plugins/RobotModel
+      Name: RobotModel
+      Enabled: true
+      Visual Enabled: true
+      Collision Enabled: false
+      Description Topic: robot_description
+
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: base_link     # change if your URDF uses another root
+
+  Name: root
+
+Views:
+  Current:
+    Class: rviz_default_plugins/Orbit
+    Name: Orbit View
+    Target Frame: base_link
+    Distance: 3.0
+    Pitch: 0.5
+    Yaw: 0.5

@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Gazebo-specific tags for the pan-tilt robot -->
+
+    <!-- Gazebo materials for links -->
+    <gazebo reference="base_link">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+
+    <gazebo reference="pan_link">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <gazebo reference="tilt_link">
+        <material>Gazebo/Red</material>
+    </gazebo>
+
+    <gazebo reference="camera_link">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <!-- Plugin to publish joint_states for pan and tilt 
+         (robot_state_publisher then turns this into TF) -->
+    <gazebo>
+        <plugin name="gazebo_ros_joint_state_publisher"
+                filename="libgazebo_ros_joint_state_publisher.so">
+            <update_rate>20</update_rate>
+            <joint_name>pan_joint</joint_name>
+            <joint_name>tilt_joint</joint_name>
+        </plugin>
+    </gazebo>
+
+    <!-- Plugin to receive JointTrajectory messages on /set_joint_trajectory
+         and move the robot accordingly (same as your example, but now for
+         pan_joint and tilt_joint). -->
+    <gazebo>
+        <plugin name="gazebo_ros_joint_pose_trajectory"
+                filename="libgazebo_ros_joint_pose_trajectory.so">
+            <update_rate>2</update_rate>
+        </plugin>
+    </gazebo>
+
+    <!-- Optional: depth camera on the camera_link, using a proper optical frame -->
+
+    <joint name="camera_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="-1.571 0 -1.571" />
+        <parent link="camera_link" />
+        <child link="camera_link_optical" />
+    </joint>
+
+    <link name="camera_link_optical"></link>
+
+    <gazebo reference="camera_link">
+        <sensor type="depth" name="my_camera">
+            <update_rate>20</update_rate>
+            <visualize>true</visualize>
+            <camera name="cam">
+                <horizontal_fov>1.3962634</horizontal_fov>
+                <image>
+                    <width>640</width>
+                    <height>480</height>
+                    <format>R8B8G8</format>
+                </image>
+                <clip>
+                    <near>0.02</near>
+                    <far>300</far>
+                </clip>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.007</stddev>
+                </noise>
+            </camera>
+            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                <frame_name>camera_link_optical</frame_name>
+                <min_depth>0.1</min_depth>
+                <max_depth>500</max_depth>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+</robot>
