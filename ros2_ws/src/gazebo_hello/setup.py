@@ -28,6 +28,8 @@ setup(
     entry_points={
         'console_scripts': [
             'pan_tilt_motion = gazebo_hello.pan_tilt_motion:main',
+            'face_detector = gazebo_hello.face_detector:main',
+            'face_tracker = gazebo_hello.face_tracker:main',
         ],
     },
 )
