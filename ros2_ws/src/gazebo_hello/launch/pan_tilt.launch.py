@@ -9,6 +9,8 @@ import xacro
 def generate_launch_description():
 
     pkg_share = get_package_share_directory('gazebo_hello')
+    world_path = os.path.join(pkg_share, 'worlds', 'env.world')
+
 
     # Correct XACRO path
     xacro_path = os.path.join(pkg_share, 'urdf', 'pan_tilt.urdf.xacro')
@@ -35,7 +37,8 @@ def generate_launch_description():
                 'launch',
                 'gazebo.launch.py'
             )
-        )
+        ),
+        launch_arguments={'world': world_path}.items()
     )
     rviz = Node(
             package='rviz2',
@@ -54,10 +57,26 @@ def generate_launch_description():
         output='screen'
     )
 
+    tracker = Node(
+        package='gazebo_hello',
+        executable='face_tracker',
+        name='face_tracker',
+        output='screen',
+        parameters=[{'use_sim_time': True}]
+    )
+
     motion = Node(
         package='gazebo_hello',
         executable='pan_tilt_motion',
         name='pan_tilt_motion',
+        output='screen',
+        parameters=[{'use_sim_time': True}]
+)
+
+    detector = Node(
+        package='gazebo_hello',
+        executable='face_detector',
+        name='face_detector',
         output='screen',
         parameters=[{'use_sim_time': True}]
     )
@@ -66,6 +85,8 @@ def generate_launch_description():
         gazebo,
         node_robot_state_publisher,
         spawn_entity,
+        tracker,
+        detector,
         motion,
         rviz,
     ])
