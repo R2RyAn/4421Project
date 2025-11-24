@@ -11,7 +11,7 @@
 
     <!-- Fixed joint from world to base_link (like the example) -->
     <joint name="base_joint" type="fixed">
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0.081932 1.347850 0.5" rpy="0 0 0"/>
         <parent link="world"/>
         <child link="base_link"/>        
     </joint>

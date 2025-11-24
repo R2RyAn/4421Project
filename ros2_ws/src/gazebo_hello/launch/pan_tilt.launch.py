@@ -57,6 +57,7 @@ def generate_launch_description():
         output='screen'
     )
 
+
     tracker = Node(
         package='gazebo_hello',
         executable='face_tracker',
