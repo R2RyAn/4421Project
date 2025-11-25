@@ -31,10 +31,20 @@ class FaceDetector(Node):
             gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)
         )
 
+        # =======================================
+        #            NO FACE FOUND
+        # =======================================
         if len(faces) == 0:
+            pt = Point()
+            pt.x = -1.0
+            pt.y = -1.0
+            self.pub.publish(pt)
             return
 
-        (x, y, w, h) = max(faces, key=lambda f: f[2] * f[3])
+        # =======================================
+        #         FACE EXISTS → PUBLISH CENTER
+        # =======================================
+        (x, y, w, h) = max(faces, key=lambda f: f[2] * f[3])  # largest face
         cx = x + w // 2
         cy = y + h // 2
 

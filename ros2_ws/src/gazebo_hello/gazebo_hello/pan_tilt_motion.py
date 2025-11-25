@@ -51,10 +51,10 @@ class PanTiltTeleop(Node):
         # Publish
         self.pub.publish(traj)
 
-        self.get_logger().info(
-            f"Pan: {self.pan:.2f}, Tilt: {self.tilt:.2f} "
-            f"(input pan={msg.angular.z:.2f}, tilt={msg.linear.x:.2f})"
-        )
+        #self.get_logger().info(
+        #    f"Pan: {self.pan:.2f}, Tilt: {self.tilt:.2f} "
+        #    f"(input pan={msg.angular.z:.2f}, tilt={msg.linear.x:.2f})"
+        #)
 
 
 def main(args=None):

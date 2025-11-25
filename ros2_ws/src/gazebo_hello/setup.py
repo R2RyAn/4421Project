@@ -30,6 +30,9 @@ setup(
             'pan_tilt_motion = gazebo_hello.pan_tilt_motion:main',
             'face_detector = gazebo_hello.face_detector:main',
             'face_tracker = gazebo_hello.face_tracker:main',
+            'image_viewer = gazebo_hello.image_viewer:main',
+            'target_teleop = gazebo_hello.target_teleop:main',
+
         ],
     },
 )

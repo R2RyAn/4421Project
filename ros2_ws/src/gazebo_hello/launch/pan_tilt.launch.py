@@ -11,14 +11,16 @@ def generate_launch_description():
     pkg_share = get_package_share_directory('gazebo_hello')
     world_path = os.path.join(pkg_share, 'worlds', 'env.world')
 
-
-    # Correct XACRO path
+    # URDF/XACRO path for pan-tilt
     xacro_path = os.path.join(pkg_share, 'urdf', 'pan_tilt.urdf.xacro')
+    urdf_path = os.path.join(pkg_share, 'urdf', 'moving_face.urdf')
 
-    # Process XACRO so includes are expanded
+    # Load pan-tilt URDF
     robot_description_raw = xacro.process_file(xacro_path).toxml()
 
-    # Robot State Publisher
+    # -----------------------------
+    # Robot State Publishers
+    # -----------------------------
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -29,7 +31,9 @@ def generate_launch_description():
         output='screen'
     )
 
-    # Launch Gazebo
+    # -----------------------------
+    # Gazebo + world
+    # -----------------------------
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
@@ -40,24 +44,34 @@ def generate_launch_description():
         ),
         launch_arguments={'world': world_path}.items()
     )
-    rviz = Node(
-            package='rviz2',
-            namespace='',
-            executable='rviz2',
-            name='rviz2',
-            arguments=['-d' + os.path.join(get_package_share_directory('gazebo_hello'), 'config', 'config_file.rviz')]
-        )
 
-    # Spawn robot
-    spawn_entity = Node(
+    # -----------------------------
+    # NOTE:
+    # pan_tilt is ALREADY in env.world, so we DO NOT spawn it again.
+    # This avoids "Entity [pan_tilt] already exists" errors.
+    # -----------------------------
+
+    # -----------------------------
+    # Spawn moving_face model from SDF
+    # -----------------------------
+
+
+    spawn_moving_face = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        arguments=['-topic', 'robot_description',
-                   '-entity', 'pan_tilt'],
+        arguments=[
+            '-file', urdf_path,
+            '-entity', 'moving_face',
+            '-x', '3.0',
+            '-y', '1.5',
+            '-z', '0.2'
+        ],
         output='screen'
     )
 
-
+    # -----------------------------
+    # Other nodes
+    # -----------------------------
     tracker = Node(
         package='gazebo_hello',
         executable='face_tracker',
@@ -72,7 +86,7 @@ def generate_launch_description():
         name='pan_tilt_motion',
         output='screen',
         parameters=[{'use_sim_time': True}]
-)
+    )
 
     detector = Node(
         package='gazebo_hello',
@@ -82,12 +96,29 @@ def generate_launch_description():
         parameters=[{'use_sim_time': True}]
     )
 
+    viewer = Node(
+        package='gazebo_hello',
+        executable='image_viewer',
+        name='image_viewer',
+        output='screen',
+        parameters=[{'use_sim_time': True}]
+    )
+
+    move_image = Node(
+        package='gazebo_hello',
+        executable='target_teleop',
+        name='target_teleop',
+        output='screen',
+        parameters=[{'use_sim_time': True}]
+    )
+
     return LaunchDescription([
         gazebo,
         node_robot_state_publisher,
-        spawn_entity,
+        spawn_moving_face,
         tracker,
         detector,
         motion,
-        rviz,
+        viewer,
+        #move_image,
     ])
