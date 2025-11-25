@@ -64,7 +64,7 @@ def generate_launch_description():
             '-entity', 'moving_face',
             '-x', '3.0',
             '-y', '1.5',
-            '-z', '0.2'
+            '-z', '0.4'
         ],
         output='screen'
     )
