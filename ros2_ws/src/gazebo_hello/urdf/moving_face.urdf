@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <robot name="moving_face">
 
-  <link name="lil_cube">
-
+  <!-- Root link (fixed in place via Gazebo props) -->
+  <link name="z_cube">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -24,15 +24,41 @@
       <mass value="1.0"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="0.01" ixy="0" ixz="0"
-                iyy="0.01" iyz="0"
-                izz="0.01"/>
+               iyy="0.01" iyz="0"
+               izz="0.01"/>
     </inertial>
-
   </link>
 
-  <!-- A single cube -->
-  <link name="cube_link">
+  <!-- Intermediate cube -->
+  <link name="x_cube">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
 
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0"
+               iyy="0.01" iyz="0"
+               izz="0.01"/>
+    </inertial>
+  </link>
+
+  <!-- Big blue cube (the visible target) -->
+  <link name="cube_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -57,22 +83,50 @@
                iyy="0.01" iyz="0"
                izz="0.01"/>
     </inertial>
-
   </link>
 
-  <joint name="prism_joint" type="prismatic">
-      <parent link="lil_cube"/>
-      <child link="cube_link"/>
-      <origin xyz="0 0 0.05" rpy="0 0 0"/>
-      <axis xyz="0 0 1"/>
-      <limit lower="-3.14159" upper="3.14159" effort="10" velocity="2.0"/>
-      <dynamics damping="0.5" friction="0.1"/>
+  <!-- Vertical prismatic joint (z) -->
+  <joint name="z_joint" type="prismatic">
+    <parent link="z_cube"/>
+    <child link="x_cube"/>
+    <origin xyz="0 0 0.05" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-0.5" upper="0.5" effort="10" velocity="2.0"/>
+    <dynamics damping="0.5" friction="0.1"/>
   </joint>
 
-  <!-- Make lil_cube effectively fixed: no gravity, kinematic -->
-  <gazebo reference="lil_cube">
+  <!-- Horizontal prismatic joint (x) -->
+  <joint name="x_joint" type="prismatic">
+    <parent link="x_cube"/>
+    <child link="cube_link"/>
+    <origin xyz="0 0 0.05" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.5" upper="0.5" effort="10" velocity="2.0"/>
+    <dynamics damping="0.5" friction="0.1"/>
+  </joint>
+
+  <!-- Make z_cube effectively fixed: no gravity, kinematic -->
+  <gazebo reference="z_cube">
     <gravity>false</gravity>
     <kinematic>true</kinematic>
+  </gazebo>
+
+  <!-- Plugin to control z_joint and x_joint via /set_joint_trajectory -->
+  <gazebo>
+    <plugin name="lift_controller" filename="libgazebo_ros_joint_pose_trajectory.so">
+      <update_rate>20</update_rate>
+      <joint_name>z_joint</joint_name>
+      <joint_name>x_joint</joint_name>
+    </plugin>
+  </gazebo>
+
+  <!-- Optional: publish joint_states so you can debug -->
+  <gazebo>
+    <plugin name="moving_face_joint_states" filename="libgazebo_ros_joint_state_publisher.so">
+      <update_rate>20</update_rate>
+      <joint_name>z_joint</joint_name>
+      <joint_name>x_joint</joint_name>
+    </plugin>
   </gazebo>
 
 </robot>
